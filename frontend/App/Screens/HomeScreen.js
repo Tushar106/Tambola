@@ -1,4 +1,4 @@
-import { View, Text, StyleSheet, Button, Image, TouchableOpacity } from 'react-native'
+import { View, Text, StyleSheet, Image, TouchableOpacity } from 'react-native'
 import React from 'react'
 
 export default function HomeScreen({ navigation }) {
@@ -61,7 +61,6 @@ const style = StyleSheet.create({
     flexDirection: "column",
     alignItems: 'center',
     justifyContent: 'center',
-    // backgroundColor: "lightblue",
     padding: 10,
   },
   buttonHeader: {
