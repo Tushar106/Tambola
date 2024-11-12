@@ -4,6 +4,8 @@ import { createStackNavigator } from '@react-navigation/stack';
 import { NavigationContainer } from '@react-navigation/native';
 import HomeScreen from '../Screens/HomeScreen';
 import * as ScreenOrientation from 'expo-screen-orientation';
+import JoinGame from '../Screens/JoinGame';
+import NewGame from '../Screens/NewGame';
 
 
 export default function Navigation() {
@@ -26,6 +28,8 @@ export default function Navigation() {
         <NavigationContainer theme={Theme}>
           <Stack.Navigator screenOptions={{headerShown:false}}>
             <Stack.Screen name="Home" component={HomeScreen} />
+            <Stack.Screen name="JoinGame" component={JoinGame} />
+            <Stack.Screen name="NewGame" component={NewGame} />
           </Stack.Navigator>
           </NavigationContainer>
       );

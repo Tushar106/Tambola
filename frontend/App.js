@@ -12,7 +12,7 @@ export default function App() {
   }, [])
   return (
     <>
-      <StatusBar />
+      <StatusBar hidden={true} />
       {isSplashReady ? <SplashScreenView /> : <Navigation />}
     </>
   );
