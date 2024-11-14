@@ -4,6 +4,7 @@ import { useEffect } from 'react';
 import { useState } from 'react';
 import 'react-native-gesture-handler'
 import Navigation from './App/Navigation/Navigation';
+import AuthContextProvider from './App/Components/AuthContext';
 
 export default function App() {
   const [isSplashReady, setSplashReady] = useState(true);
@@ -12,8 +13,12 @@ export default function App() {
   }, [])
   return (
     <>
-      <StatusBar hidden={true} />
-      {isSplashReady ? <SplashScreenView /> : <Navigation />}
+      <AuthContextProvider>
+        <StatusBar hidden={true} />
+        {isSplashReady ? <SplashScreenView /> :
+          <Navigation />
+        }
+      </AuthContextProvider>
     </>
   );
 }

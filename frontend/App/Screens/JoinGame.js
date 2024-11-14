@@ -1,7 +1,16 @@
 import { View, Text, StyleSheet, Button, Image, TouchableOpacity, TextInput, ScrollView } from 'react-native'
-import React from 'react'
+import React, { useState } from 'react'
 
 export default function JoinGame({ navigation }) {
+  const [code,setCode]=useState("");
+  const handleJoinGame = () => {
+    console.log(code)
+    if(code.trim()===""){
+      alert("Please enter a valid code");
+      return;
+    }
+    navigation.navigate("GameScreen");
+  }
   return (
     <ScrollView automaticallyAdjustKeyboardInsets={true}>
     <View style={style.container}>
@@ -15,10 +24,11 @@ export default function JoinGame({ navigation }) {
         <TextInput
         disableFullscreenUI={true}
           placeholder="Enter Game Code"
+          onChangeText={(text)=>setCode(text)}
           style={{ height: 40, borderColor: 'gray',padding: 10, borderWidth: 1, width: "60%", backgroundColor: "white" }}
         />
         <TouchableOpacity style={style.enterButton}
-          onPress={() => console.log("he")}>
+          onPress={() => handleJoinGame()}>
           <Text>Join Game</Text>
         </TouchableOpacity>
       </View>

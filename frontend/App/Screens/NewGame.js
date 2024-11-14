@@ -31,6 +31,9 @@ export default function NewGame({ navigation }) {
       console.error('Error sharing the game:', error);
     }
   };
+  const handleNewGame = () => {
+    navigation.navigate("GameScreen")
+  }
   return (
     <ScrollView automaticallyAdjustKeyboardInsets={true}>
       <View style={style.container}>
@@ -55,7 +58,7 @@ export default function NewGame({ navigation }) {
             <Entypo name="share" size={20} color="black" />
           </TouchableOpacity>
           <TouchableOpacity style={style.enterButton}
-            onPress={() => console.log("he")}>
+            onPress={() => handleNewGame()}>
             <Text style={style.enterText}>Start Game</Text>
           </TouchableOpacity>
         </View>
