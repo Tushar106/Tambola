@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import {
   View,
   Text,
@@ -8,16 +8,22 @@ import {
   Image,
 } from 'react-native';
 import RollingCircle from './RollingCircle';
+import { generateTicket } from '../Components/Function/GenerateTicket';
 
 const GameScreen = () => {
   const [selectedNumbers, setSelectedNumbers] = useState([]);
+  const [ticket, setTicket] = useState([]);
+  useEffect(() => {
+    setTicket(generateTicket());
+  }, []);
+
 
   // Sample ticket numbers (3 rows x 9 columns)
-  const ticket = [
-    [3, 14, null, 37, null, 53, 64, null, null],
-    [8, 18, null, 26, 38, null, null, 82, null],
-    [null, null, 47, null, 57, 68, null, 75, 85],
-  ];
+  // const ticket = [
+  //   [3, 14, null, 37, null, 53, 64, null, null],
+  //   [8, 18, null, 26, 38, null, null, 82, null],
+  //   [null, null, 47, null, 57, 68, null, 75, 85],
+  // ];
 
   const toggleNumber = (num) => {
     if (selectedNumbers.includes(num)) {

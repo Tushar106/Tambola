@@ -73,8 +73,29 @@ const AuthContextProvider = ({ children }) => {
         }
 
     }
+    const joinGame = async (roomId) => {
+        setLoading(true);
+        console.log(roomId)
+        try {
+            const res = await fetch('http://192.168.43.67:8800/api/room/join-room', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ userId: user.id,roomId:roomId }),
+            })
+            const data = await res.json();
+            console.log(data)
+            return data;
+            setLoading(false);
+        } catch (e) {
+            // saving error
+            console.log(e)
+        }
+
+    }
     return (
-        <AuthContext.Provider value={{ user: user, register: register, loading: loading,newGame:newGame }}>
+        <AuthContext.Provider value={{ user: user, register: register, loading: loading,newGame:newGame,joinGame:joinGame }}>
             {children}
         </AuthContext.Provider>
     )
