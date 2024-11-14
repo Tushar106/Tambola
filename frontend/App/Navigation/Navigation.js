@@ -28,6 +28,7 @@ export default function Navigation({navigation}) {
     }
     useEffect(() => {
         ScreenOrientation.lockAsync(ScreenOrientation.OrientationLock.LANDSCAPE);
+        const res=fetch('http://192.168.43.67:8800/').then((res)=>res.json()).then((data)=>console.log(data)).catch((err)=>console.log(err));
     }, [])
     return (
         <NavigationContainer theme={Theme}>

@@ -4,6 +4,7 @@ export const AuthContext = createContext();
 
 const AuthContextProvider = ({ children }) => {
     const [user, setUser] = useState(null);
+    const [loading, setLoading] = useState(false);
     useEffect(() => {
         getUSer();
     }, []);
@@ -23,6 +24,7 @@ const AuthContextProvider = ({ children }) => {
     const register = async (user) => {
         console.log(user)
         try {
+            
             setUser(user);
            await AsyncStorage.setItem('user', JSON.stringify(user));
         } catch (e) {
