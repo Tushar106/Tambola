@@ -65,7 +65,8 @@ mongoose.connection.on('error', (error) => {
     console.log('Mongoose connection error', error);
 })
 app.get("/", (req, res) => {
-    res.send("Server Working")
+    console.log("Server Working")
+    res.json("Server Working")
 })
 
 app.listen(8800, () => {

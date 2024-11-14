@@ -9,11 +9,12 @@ import NewGame from '../Screens/NewGame';
 import { AuthContext } from '../Components/AuthContext';
 import LoginScreen from '../Screens/LoginScreen';
 import GameScreen from '../Screens/GameScreen';
+import Loading from '../Components/Loading';
 
 
-export default function Navigation({navigation}) {
+export default function Navigation({ navigation }) {
     const Stack = createStackNavigator();
-    const {user}=useContext(AuthContext);
+    const { user, loading } = useContext(AuthContext);
     console.log(user)
     const Theme = {
         dark: false,
@@ -28,12 +29,14 @@ export default function Navigation({navigation}) {
     }
     useEffect(() => {
         ScreenOrientation.lockAsync(ScreenOrientation.OrientationLock.LANDSCAPE);
-        const res=fetch('http://192.168.43.67:8800/').then((res)=>res.json()).then((data)=>console.log(data)).catch((err)=>console.log(err));
     }, [])
+    if (loading) {
+        return (<View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}><Loading /></View>)
+    }
     return (
         <NavigationContainer theme={Theme}>
             <Stack.Navigator screenOptions={{ headerShown: false }}>
-                {user===null?<Stack.Screen name="Login" component={LoginScreen} />:null}
+                {user === null ? <Stack.Screen name="Login" component={LoginScreen} /> : null}
                 <Stack.Screen name="Home" component={HomeScreen} />
                 <Stack.Screen name="JoinGame" component={JoinGame} />
                 <Stack.Screen name="NewGame" component={NewGame} />
