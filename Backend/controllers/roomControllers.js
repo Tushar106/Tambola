@@ -1,4 +1,5 @@
 const Room=require('../models/room');
+
 const Game=require('../models/game');
 const generateUniqueId=require('../utils/generateUniqueId');
 const generateTicket=require('../utils/generateTicket')
@@ -7,31 +8,24 @@ const generateTicket=require('../utils/generateTicket')
 exports.createRoom=async(req,res,io)=>
 {
     const {userId}=req.body;// user who is creating room
-
+    console.log(userId)
     try {
-        const game=new Game({
-            gameId:generateUniqueId(),
+         const room=new Room({
             status:"waiting",
             players:[userId],
             tickets:[],
             drawnNumbers:[],
             winners:[],
-            currentTurn:userId
-        });
-        await game.save();
-
-         const room=new Room({
-            roomId:generateUniqueId(),
-            gameId:game._id,
-            players:[userId],
             createdBy:userId
          });
          await room.save();
+         console.log(room)
 
-         io.emit('roomCreated', { roomId: room.roomId, gameId: game.gameId });
-         res.status(200).json({roomId:room.roomId,gameId:game.gameId});
+        //  io.emit('roomCreated', { roomId: room.roomId, gameId: game.gameId });
+         res.status(200).json(room);
        }catch(error)
        {
+        console.log(error)
         res.status(500).send("Error in creating room: "+error.message)
        }
 };

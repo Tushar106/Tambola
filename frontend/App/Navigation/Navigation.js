@@ -14,7 +14,7 @@ import Loading from '../Components/Loading';
 
 export default function Navigation({ navigation }) {
     const Stack = createStackNavigator();
-    const { user, loading } = useContext(AuthContext);
+    const { user} = useContext(AuthContext);
     console.log(user)
     const Theme = {
         dark: false,
@@ -30,9 +30,6 @@ export default function Navigation({ navigation }) {
     useEffect(() => {
         ScreenOrientation.lockAsync(ScreenOrientation.OrientationLock.LANDSCAPE);
     }, [])
-    if (loading) {
-        return (<View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}><Loading /></View>)
-    }
     return (
         <NavigationContainer theme={Theme}>
             <Stack.Navigator screenOptions={{ headerShown: false }}>

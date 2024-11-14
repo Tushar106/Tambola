@@ -9,12 +9,12 @@ const AuthContextProvider = ({ children }) => {
         removeItemValue('user');
         // getUSer();
     }, []);
-    const  removeItemValue=async(key)=> {
+    const removeItemValue = async (key) => {
         try {
             await AsyncStorage.removeItem(key);
             return true;
         }
-        catch(exception) {
+        catch (exception) {
             return false;
         }
     }
@@ -35,8 +35,6 @@ const AuthContextProvider = ({ children }) => {
         console.log(JSON.stringify(username));
         setLoading(true);
         try {
-            // const res=await fetch('http://192.168.43.67:8800/').then(res=>res.json());
-            // console.log(res)
             const res = await fetch('http://192.168.43.67:8800/api/user/register', {
                 method: 'POST',
                 headers: {
@@ -54,8 +52,29 @@ const AuthContextProvider = ({ children }) => {
         }
 
     }
+    const newGame = async () => {
+        setLoading(true);
+        console.log(user.id)
+        try {
+            const res = await fetch('http://192.168.43.67:8800/api/room/create-room', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ userId: user.id }),
+            })
+            const data = await res.json();
+            console.log(data)
+            return data;
+            setLoading(false);
+        } catch (e) {
+            // saving error
+            console.log(e)
+        }
+
+    }
     return (
-        <AuthContext.Provider value={{ user: user, register: register ,loading:loading}}>
+        <AuthContext.Provider value={{ user: user, register: register, loading: loading,newGame:newGame }}>
             {children}
         </AuthContext.Provider>
     )

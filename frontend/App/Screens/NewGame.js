@@ -1,9 +1,14 @@
 import { View, Text, Share, StyleSheet, Button, Image, TouchableOpacity, TextInput, ScrollView, Alert } from 'react-native'
-import React from 'react'
+import React, { useContext } from 'react'
 import AntDesign from '@expo/vector-icons/AntDesign';
 import * as Clipboard from 'expo-clipboard';
 import Entypo from '@expo/vector-icons/Entypo';
-export default function NewGame({ navigation }) {
+import { AuthContext } from '../Components/AuthContext';
+export default function NewGame({ navigation, route }) {
+  const roomId = route.params.game._id
+  const game = route.params.game
+  const { user } = useContext(AuthContext);
+
   const handleCopy = async (text) => {
     if (text.trim()) {
       await Clipboard.setStringAsync(text);
@@ -12,7 +17,7 @@ export default function NewGame({ navigation }) {
   const shareGame = async () => {
     try {
       const result = await Share.share({
-        message: `Join me in playing this awesome Tambola game! Use this room code: ABC123 to join. https://tambola-game-link.com`,
+        message: `Join me in playing this awesome Tambola game! Use this room code: ${roomId} to join. https://tambola-game-link.com`,
       });
 
       if (result.action === Share.sharedAction) {
@@ -45,9 +50,9 @@ export default function NewGame({ navigation }) {
         </View>
         <View style={style.inputContainer}>
           <View style={style.codeContainer}>
-            <Text style={style.codeText}>Game Code - 5555</Text>
+            <Text style={style.codeText}>Code- {roomId}</Text>
             <TouchableOpacity onPress={() => {
-              handleCopy("5555")
+              handleCopy(roomId)
             }}>
               <AntDesign name="copy1" size={24} color="black" />
             </TouchableOpacity>
@@ -57,10 +62,10 @@ export default function NewGame({ navigation }) {
             <Text style={style.enterText}>Share Game</Text>
             <Entypo name="share" size={20} color="black" />
           </TouchableOpacity>
-          <TouchableOpacity style={style.enterButton}
+          {user.id == game.createdBy && <TouchableOpacity style={style.enterButton}
             onPress={() => handleNewGame()}>
             <Text style={style.enterText}>Start Game</Text>
-          </TouchableOpacity>
+          </TouchableOpacity>}
         </View>
       </View>
     </ScrollView>
@@ -87,7 +92,7 @@ const style = StyleSheet.create({
     gap: 10,
     flexDirection: "column",
     alignItems: 'center',
-    width: "80%",
+    width: "85%",
   },
   enterButton: {
     width: "60%",

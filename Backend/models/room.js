@@ -1,38 +1,38 @@
-const mongoose=require("mongoose")
+const mongoose = require("mongoose")
 
-const roomSchema=new mongoose.Schema({
-    roomId:
-    {
-        type:String,
-        required:true
-    },
-    gameId:
-    {
-        type:mongoose.Schema.Types.ObjectId,
-        ref:'Game',
-        required:true
-    },
+const roomSchema = new mongoose.Schema({
     players:
-    [{
-     type:mongoose.Schema.Types.ObjectId,
-     ref:'User'
-    }],
+        [{
+            type: mongoose.Schema.Types.ObjectId,
+            ref: 'User'
+        }],
     status:
     {
-        type:String,
-        enum:['waiting','started','ended'],
-        default:'waiting'
+        type: String,
+        enum: ['waiting', 'started', 'ended'],
+        default: 'waiting'
     },
+    tickets: [
+        {
+            playerId: { type: mongoose.Schema.Types.ObjectId, ref: 'User' },
+            ticketNumbers: [[Number]],
+            markedNumbers: [Number]
+        }],
+    drawnNumbers: [Number],
+    winners: [{
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'User'
+    }],
     createdBy:
     {
-        type:mongoose.Schema.Types.ObjectId,
-        ref:'User'
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'User'
     },
     createdAt:
     {
-        type:Date,
-        default:Date.now
+        type: Date,
+        default: Date.now
     }
 });
 
-module.exports=mongoose.model("Room",roomSchema);
+module.exports = mongoose.model("Room", roomSchema);
