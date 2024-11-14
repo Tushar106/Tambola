@@ -1,7 +1,7 @@
 const Room=require('../models/room');
 const Game=require('../models/game');
 const generateUniqueId=require('../utils/generateUniqueId');
-
+const generateTicket=require('../utils/generateTicket')
 
 // create a new room
 exports.createRoom=async(req,res,io)=>
@@ -77,13 +77,3 @@ exports.joinRoom=async (req,res,io)=>
     }
 };
 
-function generateTicket()
-{
-    const numbers=new Set();
-    while(numbers.size<15)
-    {
-       const num=Math.floor(Math.random()*90)+1;
-       numbers.add(num);
-    }
-    return Array.from(numbers);
-}

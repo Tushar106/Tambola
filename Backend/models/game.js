@@ -20,7 +20,7 @@ const gameSchema = new mongoose.Schema(
         tickets: [
             {
                 playerId: { type: mongoose.Schema.Types.ObjectId, ref: 'User' },
-                ticketNumbers: [Number],
+                ticketNumbers: [[Number]],
                 markedNumbers: [Number]
             }],
         drawnNumbers:[Number],
