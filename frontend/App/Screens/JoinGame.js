@@ -22,7 +22,7 @@ export default function JoinGame({ navigation }) {
         return;
       }
       console.log(game);
-      navigation.navigate("GameScreen");
+      navigation.navigate("NewGame", { game: game });
     } catch (error) {
       console.log(error);
     }
