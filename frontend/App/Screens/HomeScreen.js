@@ -4,7 +4,7 @@ import { AuthContext } from '../Components/AuthContext';
 import Loading from '../Components/Loading';
 
 export default function HomeScreen({ navigation }) {
-  const { newGame } = useContext(AuthContext);
+  const { newGame ,user } = useContext(AuthContext);
   const [loading, setLoading] = useState(false);
   const onClickNewGame = async () => {
     setLoading(true);

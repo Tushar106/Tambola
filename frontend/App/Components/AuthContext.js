@@ -6,8 +6,7 @@ const AuthContextProvider = ({ children }) => {
     const [user, setUser] = useState(null);
     const [loading, setLoading] = useState(false);
     useEffect(() => {
-        removeItemValue('user');
-        // getUSer();
+        getUSer();
     }, []);
     const removeItemValue = async (key) => {
         try {
@@ -32,7 +31,6 @@ const AuthContextProvider = ({ children }) => {
     };
 
     const register = async (username) => {
-        console.log(JSON.stringify(username));
         setLoading(true);
         try {
             const res = await fetch('http://192.168.43.67:8800/api/user/register', {
@@ -64,9 +62,9 @@ const AuthContextProvider = ({ children }) => {
                 body: JSON.stringify({ userId: user.id }),
             })
             const data = await res.json();
-            console.log(data)
-            return data;
+            console.log(data);
             setLoading(false);
+            return data;
         } catch (e) {
             // saving error
             console.log(e)
@@ -86,8 +84,8 @@ const AuthContextProvider = ({ children }) => {
             })
             const data = await res.json();
             console.log(data)
-            return data;
             setLoading(false);
+            return data;
         } catch (e) {
             // saving error
             console.log(e)

@@ -1,18 +1,18 @@
 require('dotenv').config();
 const express = require('express')
 const mongoose = require('mongoose')
-const cors=require('cors')
-const http = require('http');
-const socketIo = require('socket.io');
-
-const gameRoutes=require('./routes/gameRoutes');
-const roomRoutes=require('./routes/roomRoutes');
-const userRoutes=require('./routes/userRoutes');
+const cors = require('cors')
+const { createServer } = require("http");
+const { Server } = require("socket.io");
+const gameRoutes = require('./routes/gameRoutes');
+const roomRoutes = require('./routes/roomRoutes');
+const userRoutes = require('./routes/userRoutes');
 
 
 const app = express();
-const server=http.createServer(app);
- global.io=socketIo(server,{cors:{origin:'*'}});
+
+const httpServer = createServer(app);
+const io = new Server(httpServer, { cors: { origin: '*' } });
 
 app.use(express.json());
 app.use(cors());
@@ -20,21 +20,19 @@ app.use(cors());
 
 
 // Routes
-app.use('/api/game',gameRoutes);
-app.use('/api/room',roomRoutes);
-app.use('/api/user',userRoutes);
+app.use('/api/game', gameRoutes);
+app.use('/api/room', roomRoutes);
+app.use('/api/user', userRoutes);
 
 
 // socket.IO events
-global.io.on('connection',(socket)=>
-{
-    console.log('user connected: ',socket.id);
-
-    socket.on('joinRoom',({roomId,userId})=>
-    {
+io.on('connection', (socket) => {
+    console.log('user connected: ', socket.id);
+    socket.on('joinRoom', ({ roomId, userId }) => {
         try {
+            console.log(roomId, userId)
             socket.join(roomId);
-            io.to(roomId).emit('userJoined', { message: `User ${userId} has joined the room` });
+            io.in(roomId).emit('userJoined', { message: `User ${userId} has joined the room` });
         } catch (error) {
             console.error('Error joining room:', error);
         }
@@ -43,9 +41,8 @@ global.io.on('connection',(socket)=>
     socket.on('disconnect', () => {
         console.log('User disconnected:', socket.id);
         // Further logic for user leaving a room can be added here
-    });  
+    });
 });
-
 const connect = async () => {
     try {
         mongoose.set("strictQuery", false);
@@ -69,7 +66,7 @@ app.get("/", (req, res) => {
     res.json("Server Working")
 })
 
-app.listen(8800, () => {
+httpServer.listen(8800, () => {
     connect();
     console.log('Server is running on port 8800');
 })

@@ -14,7 +14,7 @@ import Loading from '../Components/Loading';
 
 export default function Navigation({ navigation }) {
     const Stack = createStackNavigator();
-    const { user} = useContext(AuthContext);
+    const { user } = useContext(AuthContext);
     console.log(user)
     const Theme = {
         dark: false,

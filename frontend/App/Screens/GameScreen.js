@@ -10,9 +10,16 @@ import {
 import RollingCircle from './RollingCircle';
 import { generateTicket } from '../Components/Function/GenerateTicket';
 
-const GameScreen = () => {
+const GameScreen = ({ navigation }) => {
   const [selectedNumbers, setSelectedNumbers] = useState([]);
   const [ticket, setTicket] = useState([]);
+  useEffect(() => {
+    const unsubscribe = navigation.addListener('beforeRemove', e => {
+      e.preventDefault(); // Prevent default action
+      unsubscribe() // Unsubscribe the event on first call to prevent infinite loop
+      navigation.navigate('Home') // Navigate to your desired screen
+    });
+  }, [])
   useEffect(() => {
     setTicket(generateTicket());
   }, []);
@@ -45,8 +52,8 @@ const GameScreen = () => {
         </TouchableOpacity>
       </View>
       <View>
-        <RollingCircle/>
-        
+        <RollingCircle />
+
       </View>
 
       {/* Ticket Grid */}
@@ -88,8 +95,8 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     gap: 20,
   },
-  playerScroll:{
-    padding:5,
+  playerScroll: {
+    padding: 5,
     flex: 4,
     flexDirection: 'row',
   },
@@ -124,7 +131,7 @@ const styles = StyleSheet.create({
     color: '#333',
   },
   grid: {
-    gap:3,
+    gap: 3,
     flex: 1,
     marginTop: 10,
   },

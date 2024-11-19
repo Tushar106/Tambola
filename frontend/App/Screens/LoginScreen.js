@@ -9,6 +9,10 @@ export default function LoginScreen({ navigation }) {
         navigation.navigate("Home");
     }
     const handleSubmit=()=>{
+        if(name.trim()===""){
+            alert("Please enter a valid name");
+            return;
+        }
         register(name);
         navigation.navigate("Home");
     }
@@ -30,7 +34,7 @@ export default function LoginScreen({ navigation }) {
                     />
                     <TouchableOpacity style={style.enterButton}
                         onPress={handleSubmit}>
-                        <Text>register</Text>
+                        <Text>Register</Text>
                     </TouchableOpacity>
                 </View>
             </View>

@@ -1,13 +1,42 @@
 import { View, Text, Share, StyleSheet, Button, Image, TouchableOpacity, TextInput, ScrollView, Alert } from 'react-native'
-import React, { useContext } from 'react'
+import React, { useContext, useEffect } from 'react'
 import AntDesign from '@expo/vector-icons/AntDesign';
 import * as Clipboard from 'expo-clipboard';
 import Entypo from '@expo/vector-icons/Entypo';
 import { AuthContext } from '../Components/AuthContext';
+import { io } from 'socket.io-client';
+
+
 export default function NewGame({ navigation, route }) {
   const roomId = route.params.game._id
   const game = route.params.game
   const { user } = useContext(AuthContext);
+
+  const socket = io("http://192.168.43.67:8800/");
+  useEffect(() => {
+    console.log("Connecting to server...");
+
+    socket.on("connect", () => {
+      console.log("Connected to server with socket ID:", socket.id);
+      socket.emit("joinRoom", { roomId: roomId, userId: user.id });
+    });
+    socket.on("connect_error", (error) => {
+      console.error("Connection error:", error);
+    });
+
+    socket.on("disconnect", () => {
+      console.log("Disconnected from server");
+    });
+
+    return () => {
+      socket.disconnect();
+    };
+  }
+    , [roomId]);
+  socket.on("userJoined", (message) => {
+    console.log(message);
+  });
+
 
   const handleCopy = async (text) => {
     if (text.trim()) {
@@ -36,7 +65,7 @@ export default function NewGame({ navigation, route }) {
       console.error('Error sharing the game:', error);
     }
   };
-  const handleNewGame = () => {
+  const handleStartGame = () => {
     navigation.navigate("GameScreen")
   }
   return (
@@ -46,7 +75,7 @@ export default function NewGame({ navigation, route }) {
           <View className="logo">
             <Image source={require('../../assets/Logo.png')} style={{ width: 150, height: 150 }} />
           </View>
-          <Text style={style.WelcomeText}> Start a New Game</Text>
+          <Text style={style.WelcomeText}> New Game</Text>
         </View>
         <View style={style.inputContainer}>
           <View style={style.codeContainer}>
@@ -63,7 +92,7 @@ export default function NewGame({ navigation, route }) {
             <Entypo name="share" size={20} color="black" />
           </TouchableOpacity>
           {user.id == game.createdBy && <TouchableOpacity style={style.enterButton}
-            onPress={() => handleNewGame()}>
+            onPress={() => handleStartGame()}>
             <Text style={style.enterText}>Start Game</Text>
           </TouchableOpacity>}
         </View>
