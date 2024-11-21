@@ -1,10 +1,12 @@
 import { View, Text, StyleSheet, Button, Image, TouchableOpacity, TextInput, ScrollView } from 'react-native'
 import React, { useContext, useState } from 'react'
 import { AuthContext } from '../Components/AuthContext';
+import Loading from '../Components/Loading';
 
 export default function JoinGame({ navigation }) {
   const [code, setCode] = useState("");
   const { joinGame } = useContext(AuthContext);
+  const [loading,setLoading]=useState(false);
   const handleJoinGame = async () => {
     console.log(code)
     if (code.trim() === "") {
@@ -12,6 +14,7 @@ export default function JoinGame({ navigation }) {
       return;
     }
     try {
+      setLoading(true);
       const game = await joinGame(code);
       if (game === "Room not found") {
         alert("Room not found");
@@ -22,11 +25,19 @@ export default function JoinGame({ navigation }) {
         return;
       }
       console.log(game);
-      navigation.navigate("NewGame", { game: game });
+      setLoading(false);
+      navigation.navigate("NewGame", { game: game ,isNewRoom:false });
     } catch (error) {
       console.log(error);
     }
   }
+  if(loading){
+    return(
+      <View style={style.container}>
+        <Loading size={200}/>
+      </View>
+    )
+    }
   return (
     <ScrollView automaticallyAdjustKeyboardInsets={true}>
       <View style={style.container}>

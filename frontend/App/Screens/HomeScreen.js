@@ -11,7 +11,7 @@ export default function HomeScreen({ navigation }) {
     try {
       const game=await newGame();
       setLoading(false);
-      navigation.navigate('NewGame',{game:game});
+      navigation.navigate('NewGame',{game:game,isNewRoom:true});
     } catch (e) {
       console.log(e);
     }

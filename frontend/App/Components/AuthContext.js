@@ -1,12 +1,14 @@
 import { createContext, useEffect, useState } from "react";
 import AsyncStorage from '@react-native-async-storage/async-storage';
 export const AuthContext = createContext();
-
+import { io } from 'socket.io-client';
 const AuthContextProvider = ({ children }) => {
+    const socket = io("http://192.168.43.67:8800/");
     const [user, setUser] = useState(null);
     const [loading, setLoading] = useState(false);
     useEffect(() => {
         getUSer();
+        // removeItemValue('user')
     }, []);
     const removeItemValue = async (key) => {
         try {
@@ -52,7 +54,6 @@ const AuthContextProvider = ({ children }) => {
     }
     const newGame = async () => {
         setLoading(true);
-        console.log(user.id)
         try {
             const res = await fetch('http://192.168.43.67:8800/api/room/create-room', {
                 method: 'POST',
@@ -62,8 +63,8 @@ const AuthContextProvider = ({ children }) => {
                 body: JSON.stringify({ userId: user.id }),
             })
             const data = await res.json();
-            console.log(data);
             setLoading(false);
+            // socket.emit("newRoom", { roomId: data, userId: user.id });
             return data;
         } catch (e) {
             // saving error
@@ -73,27 +74,63 @@ const AuthContextProvider = ({ children }) => {
     }
     const joinGame = async (roomId) => {
         setLoading(true);
-        console.log(roomId)
         try {
             const res = await fetch('http://192.168.43.67:8800/api/room/join-room', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
                 },
-                body: JSON.stringify({ userId: user.id,roomId:roomId }),
+                body: JSON.stringify({ userId: user.id, roomId: roomId }),
             })
             const data = await res.json();
-            console.log(data)
+            // socket.emit("joinRoom", { roomId: roomId, userId: user.id });
             setLoading(false);
             return data;
         } catch (e) {
             // saving error
             console.log(e)
         }
+    }
+    const startGame = async (roomId) => {
+        setLoading(true);
+        try {
+            const res = await fetch('http://192.168.43.67:8800/api/room/start-room', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ roomId: roomId }),
+            })
+            const data = await res.json();
+            // socket.emit("joinRoom", { roomId: roomId, userId: user.id });
+            setLoading(false);
+            return data;
+        } catch (e) {
+            // saving error
+            console.log(e)
+        }
+    }
 
+    const fetchGame = async (roomId) => {
+        setLoading(true);
+        try {
+            const res = await fetch('http://192.168.43.67:8800/api/room/fetch-room', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ roomId: roomId }),
+            })
+            const data = await res.json();
+            setLoading(false);
+            return data;
+        } catch (e) {
+            // saving error
+            console.log(e)
+        }
     }
     return (
-        <AuthContext.Provider value={{ user: user, register: register, loading: loading,newGame:newGame,joinGame:joinGame }}>
+        <AuthContext.Provider value={{ startGame:startGame,user: user, register: register, loading: loading, newGame: newGame, joinGame: joinGame, fetchGame: fetchGame }}>
             {children}
         </AuthContext.Provider>
     )

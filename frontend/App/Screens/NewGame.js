@@ -1,24 +1,31 @@
 import { View, Text, Share, StyleSheet, Button, Image, TouchableOpacity, TextInput, ScrollView, Alert } from 'react-native'
-import React, { useContext, useEffect } from 'react'
+import React, { useContext, useEffect, useState } from 'react'
 import AntDesign from '@expo/vector-icons/AntDesign';
 import * as Clipboard from 'expo-clipboard';
 import Entypo from '@expo/vector-icons/Entypo';
 import { AuthContext } from '../Components/AuthContext';
 import { io } from 'socket.io-client';
+import Loading from '../Components/Loading';
 
 
 export default function NewGame({ navigation, route }) {
   const roomId = route.params.game._id
+  const [players, setPlayers] = useState([]);
+  const [loading, setLoading] = useState(false);
   const game = route.params.game
-  const { user } = useContext(AuthContext);
+  const { user, fetchGame, startGame } = useContext(AuthContext);
 
-  const socket = io("http://192.168.43.67:8800/");
   useEffect(() => {
     console.log("Connecting to server...");
-
+    const socket = io("http://192.168.43.67:8800/");
     socket.on("connect", () => {
+      console.log(route.params.isNewRoom)
       console.log("Connected to server with socket ID:", socket.id);
-      socket.emit("joinRoom", { roomId: roomId, userId: user.id });
+      if (route.params.isNewRoom) {
+        socket.emit("newRoom", { roomId: roomId, userId: user.id });
+      } else {
+        socket.emit("joinRoom", { roomId: roomId, userId: user.id });
+      }
     });
     socket.on("connect_error", (error) => {
       console.error("Connection error:", error);
@@ -27,15 +34,42 @@ export default function NewGame({ navigation, route }) {
     socket.on("disconnect", () => {
       console.log("Disconnected from server");
     });
+    socket.on("userJoined", ({ userId }) => {
+      console.log(userId)
+      setPlayers((prevPlayers) => {
+        const updatedPlayers = new Set(prevPlayers);
+        updatedPlayers.add(userId);
+        return Array.from(updatedPlayers);
+      });
+    });
+    socket.on("userLeft", ({ userId }) => {
+      setPlayers((prevPlayers) => prevPlayers.filter((player) => player !== userId));
+    });
 
+    socket.on("startGame", () => {
+      setLoading(true);
+      // Navigate to the game screen after a delay to show the loader
+      startGame(roomId).then((data) => {
+        setTimeout(() => {
+          setLoading(false);
+          navigation.navigate('GameScreen', { players: data.players });
+        }, 2000);
+      })
+    });
+    fetchGame(roomId).then((data) => {
+      setPlayers(data.players)
+    }
+    ).catch((error) => {
+      console.log(error)
+    })
     return () => {
+      socket.emit("leaveRoom", { roomId: roomId, userId: user.id });
       socket.disconnect();
     };
-  }
-    , [roomId]);
-  socket.on("userJoined", (message) => {
-    console.log(message);
-  });
+  }, [roomId, user.id]);
+
+
+
 
 
   const handleCopy = async (text) => {
@@ -66,8 +100,20 @@ export default function NewGame({ navigation, route }) {
     }
   };
   const handleStartGame = () => {
-    navigation.navigate("GameScreen")
+    const socket = io("http://192.168.43.67:8800", { transports: ['websocket'] });
+    socket.emit("startGame", { roomId: roomId });
+
   }
+  if (loading) {
+    return (
+      <View style={style.container}>
+        <Loading size={200} />
+      </View>
+    );
+  }
+
+
+
   return (
     <ScrollView automaticallyAdjustKeyboardInsets={true}>
       <View style={style.container}>
@@ -75,7 +121,8 @@ export default function NewGame({ navigation, route }) {
           <View className="logo">
             <Image source={require('../../assets/Logo.png')} style={{ width: 150, height: 150 }} />
           </View>
-          <Text style={style.WelcomeText}> New Game</Text>
+          <Text style={style.WelcomeText}> Waiting Area.... </Text>
+          <Text style={style.WelcomeText}> Players: {players.length}</Text>
         </View>
         <View style={style.inputContainer}>
           <View style={style.codeContainer}>
@@ -115,7 +162,7 @@ const style = StyleSheet.create({
     justifyContent: 'center',
   },
   WelcomeText: {
-    fontSize: 30,
+    fontSize: 15,
   },
   inputContainer: {
     gap: 10,

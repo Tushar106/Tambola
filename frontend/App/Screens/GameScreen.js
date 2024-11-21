@@ -10,7 +10,9 @@ import {
 import RollingCircle from './RollingCircle';
 import { generateTicket } from '../Components/Function/GenerateTicket';
 
-const GameScreen = ({ navigation }) => {
+const GameScreen = ({ navigation ,route }) => {
+  const { players } = route.params;
+  console.log(route.params)
   const [selectedNumbers, setSelectedNumbers] = useState([]);
   const [ticket, setTicket] = useState([]);
   useEffect(() => {
@@ -40,11 +42,13 @@ const GameScreen = ({ navigation }) => {
         </View>
         <View style={styles.playerScroll}>
           <ScrollView horizontal={true}>
-            <View style={styles.player}>
-              <View style={styles.avatar}>
-                <Text style={styles.avatarText}>You</Text>
+            {players.map((player, index) => (
+              <View key={index} style={styles.player}>
+                <View style={styles.avatar}>
+                  <Text style={styles.avatarText}>{player.username}</Text>
+                </View>
               </View>
-            </View>
+            ))}
           </ScrollView>
         </View>
         <TouchableOpacity style={styles.claimButton}>
@@ -105,7 +109,7 @@ const styles = StyleSheet.create({
     marginRight: 5,
   },
   avatar: {
-    width: 60,
+    padding:10,
     height: 40,
     borderRadius: 20,
     backgroundColor: '#ffd700',
