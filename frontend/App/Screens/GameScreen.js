@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 import {
   View,
   Text,
@@ -9,19 +9,38 @@ import {
 } from 'react-native';
 import RollingCircle from './RollingCircle';
 import { generateTicket } from '../Components/Function/GenerateTicket';
+import { AuthContext } from '../Components/AuthContext';
 
-const GameScreen = ({ navigation ,route }) => {
-  const { players } = route.params;
-  console.log(route.params)
+const GameScreen = ({ navigation, route }) => {
+  const { players, roomId, socket } = route.params;
+  if (!socket || !players || !roomId) {
+    return (
+      <View style={styles.container}>
+        <Text>Cant Open</Text>
+      </View>
+    )
+  }
+
+  const { user } = useContext(AuthContext);
   const [selectedNumbers, setSelectedNumbers] = useState([]);
+  const [drawnNumber, setDrawnNumber] = useState(null);
   const [ticket, setTicket] = useState([]);
   useEffect(() => {
     const unsubscribe = navigation.addListener('beforeRemove', e => {
+      console.log()
+      socket.emit("leaveRoom", { roomId: roomId, userId: user.id });
       e.preventDefault(); // Prevent default action
       unsubscribe() // Unsubscribe the event on first call to prevent infinite loop
-      navigation.navigate('Home') // Navigate to your desired screen
+      navigation.reset({
+        index: 0,
+        routes: [{ name: 'Home' }],
+      }); // Reset the navigation stack to the home screen
     });
+
   }, [])
+  socket.on('drawnNumber', ({ number }) => {
+    setDrawnNumber(number);
+  })
   useEffect(() => {
     setTicket(generateTicket());
   }, []);
@@ -56,8 +75,7 @@ const GameScreen = ({ navigation ,route }) => {
         </TouchableOpacity>
       </View>
       <View>
-        <RollingCircle />
-
+        <RollingCircle drawnNumber={drawnNumber} />
       </View>
 
       {/* Ticket Grid */}
@@ -109,7 +127,7 @@ const styles = StyleSheet.create({
     marginRight: 5,
   },
   avatar: {
-    padding:10,
+    padding: 10,
     height: 40,
     borderRadius: 20,
     backgroundColor: '#ffd700',

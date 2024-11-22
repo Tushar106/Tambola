@@ -46,15 +46,13 @@ export default function NewGame({ navigation, route }) {
       setPlayers((prevPlayers) => prevPlayers.filter((player) => player !== userId));
     });
 
-    socket.on("startGame", () => {
+    socket.on("startGame", ({ players }) => {
       setLoading(true);
       // Navigate to the game screen after a delay to show the loader
-      startGame(roomId).then((data) => {
-        setTimeout(() => {
-          setLoading(false);
-          navigation.navigate('GameScreen', { players: data.players });
-        }, 2000);
-      })
+      setTimeout(() => {
+        setLoading(false);
+        navigation.navigate('GameScreen', { players: players ,roomId:roomId ,socket:socket });
+      }, 2000);
     });
     fetchGame(roomId).then((data) => {
       setPlayers(data.players)
@@ -99,9 +97,17 @@ export default function NewGame({ navigation, route }) {
       console.error('Error sharing the game:', error);
     }
   };
-  const handleStartGame = () => {
-    const socket = io("http://192.168.43.67:8800", { transports: ['websocket'] });
-    socket.emit("startGame", { roomId: roomId });
+  const handleStartGame = async () => {
+    setLoading(true);
+    try {
+      const data = await startGame(roomId);
+      const socket = io("http://192.168.43.67:8800", { transports: ['websocket'] });
+      socket.emit("startGame", { roomId: roomId, players: data.players });
+      console.log(data)
+    } catch (error) {
+      console.log(error)
+    }
+
 
   }
   if (loading) {

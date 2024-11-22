@@ -60,6 +60,7 @@ exports.startRoom = async (req, res, io) => {
         }
         room.gameStatus = 'started';
         await room.save();
+        console.log(room)
         res.status(200).json(room);
     } catch (error) {
         console.log(error)

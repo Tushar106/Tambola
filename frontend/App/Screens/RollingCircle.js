@@ -11,7 +11,7 @@ import Svg, { Circle } from 'react-native-svg';
 
 const AnimatedCircle = Animated.createAnimatedComponent(Circle);
 
-const RollingCircle = () => {
+const RollingCircle = ({drawnNumber}) => {
   const radius = 30; // Circle radius
   const strokeWidth = 8; // Circle border thickness
   const circumference = 2 * Math.PI * radius;
@@ -60,7 +60,7 @@ const RollingCircle = () => {
       </Svg>
       {/* Display the Current Number */}
       <View style={styles.numberContainer}>
-        <Text style={styles.numberText}>5</Text>
+        <Text style={styles.numberText}>{drawnNumber}</Text>
       </View>
     </View>
   );

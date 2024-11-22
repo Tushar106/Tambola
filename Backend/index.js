@@ -29,6 +29,25 @@ app.use('/api/game', gameRoutes);
 app.use('/api/room', roomRoutes);
 app.use('/api/user', userRoutes);
 
+// Function to generate a random number
+const generateRandomNumber = () => {
+    return Math.floor(Math.random() * 100) + 1; // Random number between 1 and 100
+};
+
+// Worker function to send a random number to each user in the room every 3 seconds
+const startNumberBroadcast = (roomId) => {
+    const intervalId = setInterval(() => {
+        const randomNumber = generateRandomNumber();
+        console.log(`Sending random number ${randomNumber} to room ${roomId}`);
+        io.in(roomId).emit('drawnNumber', { number: randomNumber });
+    },3000);
+
+    return intervalId;
+};
+
+// Store interval IDs for each room
+const roomIntervals = {};
+
 
 // socket.IO events
 io.on('connection', (socket) => {
@@ -55,24 +74,39 @@ io.on('connection', (socket) => {
     });
     socket.on('leaveRoom', async ({ roomId, userId }) => {
         try {
-            socket.leave(roomId);
             console.log(`User ${userId} left room ${roomId}`);
-      
             // Remove user from the room in the database
             await removeUserFromRoom(roomId, userId);
-      
             io.in(roomId).emit('userLeft', { message: `User ${userId} has left the room`, userId: userId });
-          } catch (error) {
+            if (io.sockets.adapter.rooms.get(roomId)?.size === 1) {
+                console.log("herh")
+                clearInterval(roomIntervals[roomId]);
+                delete roomIntervals[roomId];
+            }
+            socket.leave(roomId);
+        } catch (error) {
             console.error('Error leaving room:', error);
-          }
+        }
     });
-    socket.on('startGame', ({ roomId }) => {
+    socket.on('startGame', ({ roomId, players }) => {
         console.log(`Starting game in room ${roomId}`);
-        io.in(roomId).emit('startGame');
+        io.in(roomId).emit('startGame', { players: players });
+        // Start broadcasting random numbers to the room
+        if (!roomIntervals[roomId]) {
+            roomIntervals[roomId] = startNumberBroadcast(roomId);
+        }
     });
     socket.on('disconnect', () => {
         console.log('User disconnected:', socket.id);
         // Further logic for user leaving a room can be added here
+        // for (const roomId of socket.rooms) {
+        //     if (roomId !== socket.id) {
+        //       if (io.sockets.adapter.rooms.get(roomId)?.size === 0) {
+        //         clearInterval(roomIntervals[roomId]);
+        //         delete roomIntervals[roomId];
+        //       }
+        //     }
+        //   }
     });
 });
 const connect = async () => {

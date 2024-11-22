@@ -1,9 +1,7 @@
 import { createContext, useEffect, useState } from "react";
 import AsyncStorage from '@react-native-async-storage/async-storage';
 export const AuthContext = createContext();
-import { io } from 'socket.io-client';
 const AuthContextProvider = ({ children }) => {
-    const socket = io("http://192.168.43.67:8800/");
     const [user, setUser] = useState(null);
     const [loading, setLoading] = useState(false);
     useEffect(() => {
@@ -83,7 +81,6 @@ const AuthContextProvider = ({ children }) => {
                 body: JSON.stringify({ userId: user.id, roomId: roomId }),
             })
             const data = await res.json();
-            // socket.emit("joinRoom", { roomId: roomId, userId: user.id });
             setLoading(false);
             return data;
         } catch (e) {
@@ -102,8 +99,8 @@ const AuthContextProvider = ({ children }) => {
                 body: JSON.stringify({ roomId: roomId }),
             })
             const data = await res.json();
-            // socket.emit("joinRoom", { roomId: roomId, userId: user.id });
-            setLoading(false);
+            console.log(data)
+            setLoading("hehe");
             return data;
         } catch (e) {
             // saving error
@@ -130,7 +127,7 @@ const AuthContextProvider = ({ children }) => {
         }
     }
     return (
-        <AuthContext.Provider value={{ startGame:startGame,user: user, register: register, loading: loading, newGame: newGame, joinGame: joinGame, fetchGame: fetchGame }}>
+        <AuthContext.Provider value={{ user: user, register: register, loading: loading, newGame: newGame, joinGame: joinGame, fetchGame: fetchGame ,startGame:startGame}}>
             {children}
         </AuthContext.Provider>
     )
