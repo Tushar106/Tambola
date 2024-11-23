@@ -27,8 +27,7 @@ const GameScreen = ({ navigation, route }) => {
   const [ticket, setTicket] = useState([]);
   useEffect(() => {
     const unsubscribe = navigation.addListener('beforeRemove', e => {
-      console.log()
-      socket.emit("leaveRoom", { roomId: roomId, userId: user.id });
+      // socket.emit("leaveRoom", { roomId: roomId, userId: user.id });
       e.preventDefault(); // Prevent default action
       unsubscribe() // Unsubscribe the event on first call to prevent infinite loop
       navigation.reset({
@@ -36,6 +35,8 @@ const GameScreen = ({ navigation, route }) => {
         routes: [{ name: 'Home' }],
       }); // Reset the navigation stack to the home screen
     });
+
+    // return unsubscribe;
 
   }, [])
   socket.on('drawnNumber', ({ number }) => {
