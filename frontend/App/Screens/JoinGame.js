@@ -26,7 +26,7 @@ export default function JoinGame({ navigation }) {
       }
       console.log(game);
       setLoading(false);
-      navigation.navigate("NewGame", { game: game ,isNewRoom:false });
+      navigation.navigate("WaitingArea", { game: game ,isNewRoom:false });
     } catch (error) {
       console.log(error);
     }

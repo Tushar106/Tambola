@@ -1,48 +1,33 @@
+// This function is used to generate a ticket for the user. It generates a ticket with 3 rows and 9 columns. Each row has 5 numbers. The numbers are generated randomly and are unique in each row. The numbers are generated between 1 and 100. The function returns the generated ticket.
 export function generateTicket() {
     const ticket = Array.from({ length: 3 }, () => Array(9).fill(null));
-
-    // Define ranges for each column
-    const ranges = [
-        [1, 9],
-        [10, 19],
-        [20, 29],
-        [30, 39],
-        [40, 49],
-        [50, 59],
-        [60, 69],
-        [70, 79],
-        [80, 90]
-    ];
-
-    for (let col = 0; col < 9; col++) {
-        const [min, max] = ranges[col];
-
-        // Generate unique numbers for each column based on required row slots (0-3 rows, 5 numbers per row)
-        const columnNumbers = new Set();
-        while (columnNumbers.size < 3) {
-            const num = Math.floor(Math.random() * (max - min + 1)) + min;
-            columnNumbers.add(num);
-        }
-
-        // Place 3 numbers in the column
-        const columnNumbersArray = Array.from(columnNumbers);
-        let filledRows = 0;
-        for (let row = 0; row < 3; row++) {
-            if (filledRows < 3 && Math.random() < 0.5) {
-                ticket[row][col] = columnNumbersArray[filledRows];
-                filledRows++;
-            }
-        }
-    }
-
-    // Randomly select 5 cells in each row to keep the 15-number structure
+  
     for (let row = 0; row < 3; row++) {
-        const nonEmptyCells = ticket[row].map((val, idx) => (val ? idx : null)).filter(val => val !== null);
-        while (nonEmptyCells.length > 5) {
-            const idxToRemove = nonEmptyCells.splice(Math.floor(Math.random() * nonEmptyCells.length), 1)[0];
-            ticket[row][idxToRemove] = null;
+      const rowNumbers = new Set();
+      while (rowNumbers.size < 5) {
+        const num = Math.floor(Math.random() * 100) + 1;
+        rowNumbers.add(num);
+      }
+  
+      const rowNumbersArray = Array.from(rowNumbers);
+      let filledColumns = 0;
+      for (let col = 0; col < 9; col++) {
+        if (filledColumns < 5 && Math.random() < 0.5) {
+          ticket[row][col] = rowNumbersArray[filledColumns];
+          filledColumns++;
         }
+      }
+  
+      // Ensure exactly 5 numbers are placed in the row
+      let col = 0;
+      while (filledColumns < 5) {
+        if (ticket[row][col] === null) {
+          ticket[row][col] = rowNumbersArray[filledColumns];
+          filledColumns++;
+        }
+        col++;
+      }
     }
-
+  
     return ticket;
-}
+  };

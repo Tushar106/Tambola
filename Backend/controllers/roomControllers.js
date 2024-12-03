@@ -92,8 +92,6 @@ exports.removeUserFromRoom = async (roomId, userId) => {
             console.error(`Room ${roomId} not found`);
             return;
         }
-        console.log(room.users)
-
         room.players = room.players.filter(players => players.toString() !== userId);
         await room.save();
         console.log(`User ${userId} removed from room ${roomId}`);

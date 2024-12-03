@@ -5,7 +5,7 @@ import { NavigationContainer } from '@react-navigation/native';
 import HomeScreen from '../Screens/HomeScreen';
 import * as ScreenOrientation from 'expo-screen-orientation';
 import JoinGame from '../Screens/JoinGame';
-import NewGame from '../Screens/NewGame';
+import WaitingArea from '../Screens/WaitingArea';
 import { AuthContext } from '../Components/AuthContext';
 import LoginScreen from '../Screens/LoginScreen';
 import GameScreen from '../Screens/GameScreen';
@@ -36,7 +36,7 @@ export default function Navigation({ navigation }) {
                 {user === null ? <Stack.Screen name="Login" component={LoginScreen} /> : null}
                 <Stack.Screen name="Home" component={HomeScreen} />
                 <Stack.Screen name="JoinGame" component={JoinGame} />
-                <Stack.Screen name="NewGame" component={NewGame} />
+                <Stack.Screen name="WaitingArea" component={WaitingArea} />
                 <Stack.Screen name="GameScreen" component={GameScreen} />
             </Stack.Navigator>
         </NavigationContainer>

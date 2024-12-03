@@ -25,6 +25,9 @@ const GameScreen = ({ navigation, route }) => {
   const [selectedNumbers, setSelectedNumbers] = useState([]);
   const [drawnNumber, setDrawnNumber] = useState(null);
   const [ticket, setTicket] = useState([]);
+  const [claimedRows, setClaimedRows] = useState([false, false, false]); // Track claimed rows
+  const [claimedFullHouse, setClaimedFullHouse] = useState(false); // Track claimed full house
+  const [points,setPoints]=useState(0);
   useEffect(() => {
     const unsubscribe = navigation.addListener('beforeRemove', e => {
       // socket.emit("leaveRoom", { roomId: roomId, userId: user.id });
@@ -37,7 +40,6 @@ const GameScreen = ({ navigation, route }) => {
     });
 
     // return unsubscribe;
-
   }, [])
   socket.on('drawnNumber', ({ number }) => {
     setDrawnNumber(number);
@@ -53,6 +55,67 @@ const GameScreen = ({ navigation, route }) => {
     }
   };
 
+  const claimButton = () => {
+    socket.emit("ClaimReward", { roomId: roomId, userId: user.id });
+    socket.on('ClaimReward', ({ revealedNumbers }) => {
+      console.log(revealedNumbers)
+      console.log(selectedNumbers)
+      let points = 0;
+      let allRowsRevealed = true;
+
+      for (let rowIndex = 0; rowIndex < ticket.length; rowIndex++) {
+        const row = ticket[rowIndex];
+        let rowRevealed = true;
+
+        for (let num of row) {
+          if (num !== null && !revealedNumbers.includes(num)) {
+            rowRevealed = false;
+            allRowsRevealed = false;
+          }
+        }
+
+        if (rowRevealed && !claimedRows[rowIndex]) {
+          points += 30;
+          claimedRows[rowIndex] = true; // Mark the row as claimed
+          console.log("heheh")
+          socket.emit('rowClaimed', { roomId, rowIndex, userId: user.id }); // Notify other players
+        }
+      }
+
+      if (allRowsRevealed) {
+        points += 50;
+      }
+
+      // Deduct points for incorrectly revealed numbers
+      for (let num of selectedNumbers) {
+        if(revealedNumbers.includes(num)){
+          continue;
+        }
+        else{
+          points -= 10; // Deduct 10 points for each incorrectly revealed number
+        }
+      }
+      setPoints(points);
+    })
+  };
+
+  useEffect(() => {
+    socket.on('rowClaimed', ({ rowIndex, userId }) => {
+      console.log(`Row ${rowIndex} claimed by user ${userId}`);
+      // Handle row claimed notification
+      setClaimedRows((prev) => {
+        const newClaimedRows = [...prev];
+        newClaimedRows[rowIndex] = true;
+        return newClaimedRows;
+      });
+    });
+
+    return () => {
+      socket.off('rowClaimed');
+    };
+  }, [socket]);
+
+
   return (
     <View style={styles.container}>
       {/* Header Section */}
@@ -66,12 +129,13 @@ const GameScreen = ({ navigation, route }) => {
               <View key={index} style={styles.player}>
                 <View style={styles.avatar}>
                   <Text style={styles.avatarText}>{player.username}</Text>
+                  <Text style={styles.avatarText}>{points}</Text>
                 </View>
               </View>
             ))}
           </ScrollView>
         </View>
-        <TouchableOpacity style={styles.claimButton}>
+        <TouchableOpacity style={styles.claimButton} onPress={claimButton}>
           <Text style={styles.claimText}>Claim</Text>
         </TouchableOpacity>
       </View>

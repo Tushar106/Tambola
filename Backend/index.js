@@ -4,7 +4,6 @@ const mongoose = require('mongoose')
 const cors = require('cors')
 const { createServer } = require("http");
 const { Server } = require("socket.io");
-const gameRoutes = require('./routes/gameRoutes');
 const roomRoutes = require('./routes/roomRoutes');
 const userRoutes = require('./routes/userRoutes');
 const { removeUserFromRoom } = require('./controllers/roomControllers');
@@ -25,26 +24,30 @@ app.use((req, res, next) => {
 
 
 // Routes
-app.use('/api/game', gameRoutes);
 app.use('/api/room', roomRoutes);
 app.use('/api/user', userRoutes);
 
 // Function to generate a random number
-const generateRandomNumber = () => {
-    return Math.floor(Math.random() * 100) + 1; // Random number between 1 and 100
+const generateRandomNumber = (drawnNumbers) => {
+    let randomNumber;
+    do {
+        randomNumber = Math.floor(Math.random() * 100) + 1; // Random number between 1 and 100
+    } while (drawnNumbers.has(randomNumber));
+    return randomNumber;
 };
 
 // Worker function to send a random number to each user in the room every 3 seconds
 const startNumberBroadcast = (roomId) => {
+    const drawnNumbers = new Set();
     const intervalId = setInterval(() => {
-        const randomNumber = generateRandomNumber();
+        const randomNumber = generateRandomNumber(drawnNumbers);
+        drawnNumbers.add(randomNumber);
         console.log(`Sending random number ${randomNumber} to room ${roomId}`);
         io.in(roomId).emit('drawnNumber', { number: randomNumber });
-    },3000);
+    }, 3000);
 
-    return intervalId;
+    return { intervalId, drawnNumbers };
 };
-
 // Store interval IDs for each room
 const roomIntervals = {};
 
@@ -77,13 +80,14 @@ io.on('connection', (socket) => {
             console.log(`User ${userId} left room ${roomId}`);
             // Remove user from the room in the database
             await removeUserFromRoom(roomId, userId);
+            socket.leave(roomId);
             io.in(roomId).emit('userLeft', { message: `User ${userId} has left the room`, userId: userId });
-            console.log(io.sockets.adapter.rooms)
-            if (io.sockets.adapter.rooms.get(roomId)?.size === 1) {
-                clearInterval(roomIntervals[roomId]);
+            if (!io.sockets.adapter.rooms.get(roomId) || io.sockets.adapter.rooms.get(roomId)?.size === 0) {
+                console.log(io.sockets.adapter.rooms)
+                console.log("heh")
+                clearInterval(roomIntervals[roomId]?.intervalId);
                 delete roomIntervals[roomId];
             }
-            socket.leave(roomId);
         } catch (error) {
             console.error('Error leaving room:', error);
         }
@@ -97,17 +101,23 @@ io.on('connection', (socket) => {
             roomIntervals[roomId] = startNumberBroadcast(roomId);
         }
     });
+    socket.on('ClaimReward', ({ roomId, userId }) => {
+        console.log(`User ${userId} claiming Reward in room ${roomId}`);
+        console.log(roomIntervals[roomId].drawnNumbers)
+        socket.emit("ClaimReward",{revealedNumbers:[...roomIntervals[roomId]?.drawnNumbers]});
+    });
     socket.on('disconnect', () => {
         console.log('User disconnected:', socket.id);
         // Further logic for user leaving a room can be added here
+        console.log(io.sockets.adapter.rooms)
         for (const roomId of socket.rooms) {
             if (roomId !== socket.id) {
-              if (io.sockets.adapter.rooms.get(roomId)?.size === 0) {
-                clearInterval(roomIntervals[roomId]);
-                delete roomIntervals[roomId];
-              }
+                if (io.sockets.adapter.rooms.get(roomId)?.size === 0) {
+                    clearInterval(roomIntervals[roomId].intervalId);
+                    delete roomIntervals[roomId];
+                }
             }
-          }
+        }
     });
 });
 const connect = async () => {

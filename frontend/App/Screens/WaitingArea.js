@@ -8,7 +8,7 @@ import { io } from 'socket.io-client';
 import Loading from '../Components/Loading';
 
 
-export default function NewGame({ navigation, route }) {
+export default function WaitingArea({ navigation, route }) {
   const roomId = route.params.game._id
   const [players, setPlayers] = useState([]);
   const [loading, setLoading] = useState(false);
@@ -51,7 +51,7 @@ export default function NewGame({ navigation, route }) {
       // Navigate to the game screen after a delay to show the loader
       setTimeout(() => {
         setLoading(false);
-        navigation.navigate('GameScreen', { players: players ,roomId:roomId ,socket:socket });
+        navigation.navigate('GameScreen', { players: players, roomId: roomId, socket: socket });
       }, 2000);
     });
     fetchGame(roomId).then((data) => {
