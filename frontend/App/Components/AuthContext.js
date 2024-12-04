@@ -4,6 +4,7 @@ export const AuthContext = createContext();
 const AuthContextProvider = ({ children }) => {
     const [user, setUser] = useState(null);
     const [loading, setLoading] = useState(false);
+    const [api, setApi] = useState("http://192.168.43.67:8800");
     useEffect(() => {
         getUSer();
         // removeItemValue('user')
@@ -33,7 +34,7 @@ const AuthContextProvider = ({ children }) => {
     const register = async (username) => {
         setLoading(true);
         try {
-            const res = await fetch('http://192.168.43.67:8800/api/user/register', {
+            const res = await fetch(`${api}/api/user/register`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -53,7 +54,7 @@ const AuthContextProvider = ({ children }) => {
     const newGame = async () => {
         setLoading(true);
         try {
-            const res = await fetch('http://192.168.43.67:8800/api/room/create-room', {
+            const res = await fetch(`${api}/api/room/create-room`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -73,7 +74,7 @@ const AuthContextProvider = ({ children }) => {
     const joinGame = async (roomId) => {
         setLoading(true);
         try {
-            const res = await fetch('http://192.168.43.67:8800/api/room/join-room', {
+            const res = await fetch(`${api}/api/room/join-room`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -91,7 +92,7 @@ const AuthContextProvider = ({ children }) => {
     const startGame = async (roomId) => {
         setLoading(true);
         try {
-            const res = await fetch('http://192.168.43.67:8800/api/room/start-room', {
+            const res = await fetch(`${api}/api/room/start-room`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -111,7 +112,7 @@ const AuthContextProvider = ({ children }) => {
     const fetchGame = async (roomId) => {
         setLoading(true);
         try {
-            const res = await fetch('http://192.168.43.67:8800/api/room/fetch-room', {
+            const res = await fetch(`${api}/api/room/fetch-room`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -127,7 +128,7 @@ const AuthContextProvider = ({ children }) => {
         }
     }
     return (
-        <AuthContext.Provider value={{ user: user, register: register, loading: loading, newGame: newGame, joinGame: joinGame, fetchGame: fetchGame ,startGame:startGame}}>
+        <AuthContext.Provider value={{ user: user, register: register, loading: loading, newGame: newGame, joinGame: joinGame, fetchGame: fetchGame ,startGame:startGame ,api:api}}>
             {children}
         </AuthContext.Provider>
     )

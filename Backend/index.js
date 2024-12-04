@@ -103,9 +103,22 @@ io.on('connection', (socket) => {
     });
     socket.on('ClaimReward', ({ roomId, userId }) => {
         console.log(`User ${userId} claiming Reward in room ${roomId}`);
-        console.log(roomIntervals[roomId].drawnNumbers)
-        socket.emit("ClaimReward",{revealedNumbers:[...roomIntervals[roomId]?.drawnNumbers]});
+        socket.emit("ClaimReward", { revealedNumbers: [...roomIntervals[roomId]?.drawnNumbers] });
     });
+    socket.on('rowClaimed', ({ roomId, rowIndex, userId }) => {
+        console.log(`Row ${rowIndex} claimed by user ${userId} in room ${roomId}`);
+        io.in(roomId).emit('rowClaimed', { rowIndex, userId });
+    });
+    socket.on('endGame', ({ roomId, winnerId }) => {
+        console.log(`Game ended. Winner: ${winnerId} in room ${roomId}`);
+        io.in(roomId).emit('endGame', { winnerId });
+        // Clear the interval and delete the entry from roomIntervals
+        if (roomIntervals[roomId]) {
+            clearInterval(roomIntervals[roomId].intervalId);
+            delete roomIntervals[roomId];
+        }
+    });
+
     socket.on('disconnect', () => {
         console.log('User disconnected:', socket.id);
         // Further logic for user leaving a room can be added here

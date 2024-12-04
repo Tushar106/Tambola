@@ -13,11 +13,11 @@ export default function WaitingArea({ navigation, route }) {
   const [players, setPlayers] = useState([]);
   const [loading, setLoading] = useState(false);
   const game = route.params.game
-  const { user, fetchGame, startGame } = useContext(AuthContext);
+  const { user, fetchGame, startGame,api } = useContext(AuthContext);
 
   useEffect(() => {
     console.log("Connecting to server...");
-    const socket = io("http://192.168.43.67:8800/");
+    const socket = io(`${api}`, { transports: ['websocket'] });
     socket.on("connect", () => {
       console.log(route.params.isNewRoom)
       console.log("Connected to server with socket ID:", socket.id);
@@ -35,7 +35,6 @@ export default function WaitingArea({ navigation, route }) {
       console.log("Disconnected from server");
     });
     socket.on("userJoined", ({ userId }) => {
-      console.log(userId)
       setPlayers((prevPlayers) => {
         const updatedPlayers = new Set(prevPlayers);
         updatedPlayers.add(userId);
@@ -101,7 +100,7 @@ export default function WaitingArea({ navigation, route }) {
     setLoading(true);
     try {
       const data = await startGame(roomId);
-      const socket = io("http://192.168.43.67:8800", { transports: ['websocket'] });
+      const socket = io(`${api}`, { transports: ['websocket'] });
       socket.emit("startGame", { roomId: roomId, players: data.players });
       console.log(data)
     } catch (error) {
