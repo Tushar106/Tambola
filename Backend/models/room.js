@@ -12,17 +12,6 @@ const roomSchema = new mongoose.Schema({
         enum: ['waiting', 'started', 'ended'],
         default: 'waiting'
     },
-    tickets: [
-        {
-            playerId: { type: mongoose.Schema.Types.ObjectId, ref: 'User' },
-            ticketNumbers: [[Number]],
-            markedNumbers: [Number]
-        }],
-    drawnNumbers: [Number],
-    winners: [{
-        type: mongoose.Schema.Types.ObjectId,
-        ref: 'User'
-    }],
     createdBy:
     {
         type: mongoose.Schema.Types.ObjectId,
