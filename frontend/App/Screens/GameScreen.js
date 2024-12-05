@@ -14,7 +14,6 @@ import { AuthContext } from '../Components/AuthContext';
 
 const GameScreen = ({ navigation, route }) => {
   const { players, roomId, socket } = route.params;
-  console.log(players)
   if (!socket || !players || !roomId) {
     return (
       <View style={styles.container}>

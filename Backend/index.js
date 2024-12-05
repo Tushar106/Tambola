@@ -57,7 +57,6 @@ io.on('connection', (socket) => {
     console.log('user connected: ', socket.id);
     socket.on('newRoom', ({ roomId, userId }) => {
         try {
-            console.log(roomId, userId)
             socket.join(roomId);
             console.log(`User ${userId} created room ${roomId}`);
             io.in(roomId).emit('userJoined', { message: `User ${userId} has joined the room`, userId: userId });
@@ -67,7 +66,6 @@ io.on('connection', (socket) => {
     });
     socket.on('joinRoom', ({ roomId, userId }) => {
         try {
-            console.log(roomId, userId)
             socket.join(roomId);
             console.log(`User ${userId} joined room ${roomId}`);
             io.in(roomId).emit('userJoined', { message: `User ${userId} has joined the room`, userId: userId });
@@ -83,8 +81,6 @@ io.on('connection', (socket) => {
             socket.leave(roomId);
             io.in(roomId).emit('userLeft', { message: `User ${userId} has left the room`, userId: userId });
             if (!io.sockets.adapter.rooms.get(roomId) || io.sockets.adapter.rooms.get(roomId)?.size === 0) {
-                console.log(io.sockets.adapter.rooms)
-                console.log("heh")
                 clearInterval(roomIntervals[roomId]?.intervalId);
                 delete roomIntervals[roomId];
             }

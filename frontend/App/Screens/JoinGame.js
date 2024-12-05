@@ -6,9 +6,8 @@ import Loading from '../Components/Loading';
 export default function JoinGame({ navigation }) {
   const [code, setCode] = useState("");
   const { joinGame } = useContext(AuthContext);
-  const [loading,setLoading]=useState(false);
+  const [loading, setLoading] = useState(false);
   const handleJoinGame = async () => {
-    console.log(code)
     if (code.trim() === "") {
       alert("Please enter a valid code");
       return;
@@ -26,18 +25,18 @@ export default function JoinGame({ navigation }) {
       }
       console.log(game);
       setLoading(false);
-      navigation.navigate("WaitingArea", { game: game ,isNewRoom:false });
+      navigation.navigate("WaitingArea", { game: game, isNewRoom: false });
     } catch (error) {
       console.log(error);
     }
   }
-  if(loading){
-    return(
+  if (loading) {
+    return (
       <View style={style.container}>
-        <Loading size={200}/>
+        <Loading size={200} />
       </View>
     )
-    }
+  }
   return (
     <ScrollView automaticallyAdjustKeyboardInsets={true}>
       <View style={style.container}>
