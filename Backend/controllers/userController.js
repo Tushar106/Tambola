@@ -7,7 +7,7 @@ const registerUser = async (req, res) => {
 
     try {
         const newUser = new User({
-            username
+            username:username
         });
         await newUser.save();
 

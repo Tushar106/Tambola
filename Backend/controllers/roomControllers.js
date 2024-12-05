@@ -22,6 +22,7 @@ exports.createRoom = async (req, res, io) => {
 // join a room
 exports.joinRoom = async (req, res, io) => {
     const { userId, roomId } = req.body;
+    console.log("hhh", userId, roomId)
     try {
         const room = await Room.findById(roomId);
         if (!room) {

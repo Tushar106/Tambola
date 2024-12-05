@@ -62,6 +62,7 @@ const AuthContextProvider = ({ children }) => {
                 body: JSON.stringify({ userId: user.id }),
             })
             const data = await res.json();
+            console.log(data)
             setLoading(false);
             // socket.emit("newRoom", { roomId: data, userId: user.id });
             return data;

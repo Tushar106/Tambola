@@ -4,14 +4,14 @@ import { AuthContext } from '../Components/AuthContext';
 import Loading from '../Components/Loading';
 
 export default function HomeScreen({ navigation }) {
-  const { newGame ,user } = useContext(AuthContext);
+  const { newGame, user } = useContext(AuthContext);
   const [loading, setLoading] = useState(false);
   const onClickNewGame = async () => {
     setLoading(true);
     try {
-      const game=await newGame();
+      const game = await newGame();
       setLoading(false);
-      navigation.navigate('WaitingArea',{game:game,isNewRoom:true});
+      navigation.navigate('WaitingArea', { game: game, isNewRoom: true });
     } catch (e) {
       console.log(e);
     }
@@ -19,7 +19,7 @@ export default function HomeScreen({ navigation }) {
   if (loading)
     return (
       <View style={style.container}>
-        <Loading size={200}/>
+        <Loading size={200} />
       </View>
     )
   return (
