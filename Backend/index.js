@@ -136,7 +136,7 @@ io.on('connection', (socket) => {
 const connect = async () => {
     try {
         mongoose.set("strictQuery", false);
-        await mongoose.connect('mongodb://localhost:27017/tambola')
+        await mongoose.connect(process.env.MONGO_URI)
         console.log('Connected to database');
     } catch (error) {
         throw error;
