@@ -4,7 +4,7 @@ export const AuthContext = createContext();
 const AuthContextProvider = ({ children }) => {
     const [user, setUser] = useState(null);
     const [loading, setLoading] = useState(false);
-    const [api, setApi] = useState("https://tambola-1bzq.onrender.com");
+    const api = useState("https://tambola-1bzq.onrender.com");
     useEffect(() => {
         getUSer();
         // removeItemValue('user')

@@ -9,7 +9,6 @@ import WaitingArea from '../Screens/WaitingArea';
 import { AuthContext } from '../Components/AuthContext';
 import LoginScreen from '../Screens/LoginScreen';
 import GameScreen from '../Screens/GameScreen';
-import Loading from '../Components/Loading';
 
 
 export default function Navigation({ navigation }) {

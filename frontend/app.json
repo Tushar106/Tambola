@@ -9,14 +9,23 @@
     "ios": {
       "supportsTablet": true
     },
+    "splash": {
+      "backgroundColor": "#ffffff"
+     },
     "android": {
       "adaptiveIcon": {
         "foregroundImage": "./assets/adaptive-icon.png",
         "backgroundColor": "#ffffff"
-      }
+      },
+      "package": "com.tushar106.frontend"
     },
     "web": {
       "favicon": "./assets/favicon.png"
+    },
+    "extra": {
+      "eas": {
+        "projectId": "01f4e396-b6ae-4744-b58d-a23edd580900"
+      }
     }
   }
 }
